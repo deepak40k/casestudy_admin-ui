@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { SearchService } from './service/search.service';
-import { Profile } from './model/profile';
-import { Search } from './model/search-criterion';
+import { SearchService } from './service/admin.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ResposneBuilder, SearchResponse } from './model/search-response';
+import { SearchRequest } from './model/search-request';
+import { SkillList } from './constants/skill-list';
+import { CriterionList } from './constants/criterion-list';
 
 @Component({
   selector: 'app-admin',
@@ -10,32 +12,36 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./admin.component.css']
 })
 export class AdminComponent implements OnInit {
-  profiles: Profile[] = [];
-  search: Search = new Search();
-  skillList: String[] = ['HTML-CSS-JAVASCRIPT','ANGULAR1','REACT','SPRING','RESTFUL','HIBERNATE', 'GIT','DOCKER','JENKIN', 'AWS',
-   'SPOKEN', 'COMMUNICATION', 'APTITUDE'];
-  //skillList : SkillList = new SkillList();
-  searchCategory: String[] = ['NAME', 'ASSOCIATEID', 'SKILL'];
-  searchCriterion: String = 'NAME';
-  searchValue: String = '';
+  searchResponse: SearchResponse;
+  searchRequest: SearchRequest= new SearchRequest();
+  skillList : SkillList = new SkillList();
+  criterionList:CriterionList=new CriterionList();
   showRecord: boolean = false;
+
   constructor(
-    public searchService: SearchService, private sanitizer: DomSanitizer
-  ) {
+    public searchService: SearchService, private sanitizer: DomSanitizer ) {
   }
 
   ngOnInit(): void {
   }
 
-  searchProfiles(): void {
-    if (this.searchCriterion == 'SKILL')
-      this.searchValue = this.search.skill;
-    else if (this.searchCriterion == 'ASSOCIATEID')
-      this.searchValue = this.search.associateId;
-    else if (this.searchCriterion == 'NAME')
-      this.searchValue = this.search.name;
-    this.searchService.searchProfiles(this.searchCriterion, this.searchValue)
-      .subscribe(rearchresult => this.profiles = rearchresult.associates);
+  searchProfiles(): void { 
+    this.searchResponse=null;
+    this.searchService.searchProfiles(this.searchRequest.criterion, this.searchRequest.getSearchValue)
+      .subscribe(rearchresult => {
+        this.searchResponse = new ResposneBuilder()
+          .associates(rearchresult.associates)
+          .errorMessage(rearchresult.associates.length == 0 ? 'No record found' : '')
+          .build();
+      },
+        (error) => {
+          this.searchResponse = new ResposneBuilder()
+            .errorMessage(error)
+            .associates([])
+            .build();
+          console.log('Error:' + error)
+        }
+      );
     this.showRecord = true;
   }
 

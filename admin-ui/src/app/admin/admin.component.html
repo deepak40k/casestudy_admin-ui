@@ -1,52 +1,48 @@
 <div class="container text-center">
-    <h1 class="page-title">Admin Search</h1>
-    <br>
-    <form #profileForm="ngForm" (ngSubmit)="searchProfiles()" novalidate>
-        <table class="mat-table">
-            <tbody>
-  
-                <tr>
-                  <td>
-                    <select [(ngModel)]="searchCriterion" id="selectedSearch" name="selectedSearch" class="form-control-sm"
-                      #selected="ngModel" (change)="change($event)">
-                      <option *ngFor="let item of searchCategory" value={{item}}>{{item}}</option>
-                      <div *ngIf="selected.dirty" class="alert alert-danger">
-                        Associate Id is required.
-                      </div>
-                    </select>
-                  </td>
+  <h1 class="page-title">Admin Search</h1>
+  <br>
+  <form #profileForm="ngForm" (ngSubmit)="searchProfiles()" novalidate>
+    <table class="mat-table">
+      <tbody>
 
-                  <td *ngIf="searchCriterion=='NAME'">
-                    <input type="text" id="aName" class="form-control form-control-sm" required minlength="1" maxlength="20"
-                      placeholder="Associate Name" name="aName" [(ngModel)]="search.name" #name="ngModel">
-                    <div *ngIf="name.errors?.required && name.dirty" class="alert alert-danger">
-                      Name is required.
-                    </div>
-                  </td>
-                  <td *ngIf="searchCriterion=='ASSOCIATEID'">
-                    <input type="text" id="aId" class="form-control form-control-sm" required minlength="1" maxlength="20" pattern="^(CTS).*"
-                      placeholder="Associate Id" name="aId" [(ngModel)]="search.associateId" #aid="ngModel">
-                    <div *ngIf="aid.errors?.required && aid.dirty" class="alert alert-danger">
-                      Associate Id is required.
-                    </div>
-                  </td>
-                  <td *ngIf="searchCriterion=='SKILL'">
-                    <select [(ngModel)]="search.skill" id="skill" name="skill" class="form-control-sm" required
-                      #selected="ngModel" placeholder="Select" (change)="change($event)">
-                      <option *ngFor="let item of skillList" value={{item}}>
-                        {{item}}</option>
-                    </select>
-                  </td>
-                  <td>
-                    <button type="submit" id="seachButton" class="btn btn-primary btn-sm"
-                      [disabled]="this.profileForm.invalid"
-                      >
-                      Search</button>
-                  </td>
-                </tr>
-            </tbody>
-        </table>
-    </form>
+        <tr>
+          <td>
+            <select [(ngModel)]="searchRequest.criterion" id="selectedSearch" name="selectedSearch" class="form-control-sm"
+              #selected="ngModel" (change)="change($event)">
+              <option *ngFor="let item of criterionList.criterion" value={{item}}>{{item}}</option>
+            </select>
+          </td>
+
+          <td *ngIf="searchRequest.criterion=='NAME'">
+            <input type="text" id="aName" class="form-control form-control-sm" required minlength="1" maxlength="20"
+             placeholder="Associate Name" name="aName" [(ngModel)]="searchRequest.name" #name="ngModel">
+            <div *ngIf="name.errors?.required && name.dirty" class="alert alert-danger">
+              Invalid Name 
+            </div>
+          </td>
+          <td *ngIf="searchRequest.criterion=='ASSOCIATEID'">
+            <input type="text" id="aId" class="form-control form-control-sm" required minlength="1" maxlength="20"
+              pattern="^(CTS).*"  placeholder="Associate Id" name="aId" [(ngModel)]="searchRequest.associateId" #aid="ngModel">
+            <div *ngIf="aid.errors?.required && aid.dirty" class="alert alert-danger">
+              Invalid Associate Id.
+            </div>
+          </td>
+          <td *ngIf="searchRequest.criterion=='SKILL'">
+            <select [(ngModel)]="searchRequest.skill" id="skill" name="skill" class="form-control-sm" required
+              #selected="ngModel" placeholder="Select" (change)="change($event)">
+              <option *ngFor="let item of skillList.softskills" value={{item}}>
+                {{item}}</option>
+            </select>
+          </td>
+          <td>
+            <button type="submit" id="seachButton" class="btn btn-primary btn-sm" [disabled]="this.profileForm.invalid">
+              Search</button>
+          </td>
+          
+        </tr>
+      </tbody>
+    </table>
+  </form>
 </div>
 
 <div>
@@ -62,13 +58,19 @@
       </tr>
     </thead>
     <tbody>
-      <!--tr *ngIf="profiles.length==0">
+      <tr *ngIf="searchResponse!=null && searchResponse?.errorMessage!=''">
         <td colspan="3">
-          <div id="errorMessage" class="alert alert-danger text-center">
-            No Data Found
+          <div id="errorMessage" class="text-center">
+            {{searchResponse?.errorMessage}}
           </div>
-      </tr-->
-      <tr *ngFor="let profile of profiles" class="result">
+      </tr>
+      <tr *ngIf="searchResponse==null">
+        <td colspan="3">
+          <div id="initMessage" class="text-center">
+            Fetching data....
+          </div>
+      </tr>
+      <tr *ngFor="let profile of searchResponse?.associates" class="result">
         <td>
           <div class="card">
             <div class="card-body">

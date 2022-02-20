@@ -14,6 +14,7 @@ export class SearchService {
   constructor(private http: HttpClient) { }
 
   searchProfiles(criretia: String,value:String): Observable<SearchResponse> {
+    console.log(this.baseUrl + '/api/v1/admin/'+criretia+'/'+value)
     return this.http.get<SearchResponse>(this.baseUrl + '/api/v1/admin/'+criretia+'/'+value)
     .pipe(
       catchError(this.handleError)

@@ -5,12 +5,9 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdminComponent } from './admin.component';
 import { By } from '@angular/platform-browser';
-import { SearchService } from './service/search.service';
+import { SearchService } from './service/admin.service';
 import { of } from 'rxjs/internal/observable/of';
 import { Profile } from './model/profile';
-
-import { SearchResult } from './model/search-result';
-import { Observable } from 'rxjs';
 import { SearchResponse } from './model/search-response';
 
 const todosServiceStub = {
@@ -20,6 +17,7 @@ const todosServiceStub = {
       "totalPages": 2,
       "currentPage": 0,
       "total": 7,
+      "errorMessage":'',
       "associates": [
         {
           "userId": "5dd5de75-a15b-4b38-a876-3888b8ad1f70",
@@ -30,7 +28,7 @@ const todosServiceStub = {
           "skills": {
             "technical": [
               {
-                "name": "DOCKER1",
+                "name": "DOCKER",
                 "level": 20
               },
               {
@@ -119,8 +117,8 @@ describe('AdminComponent', () => {
   });
 
   it('search by name', waitForAsync(async () => {
-    component.searchCriterion = 'NAME';
-    component.search.name = 'deepak';
+    component.searchRequest.criterion = 'NAME';
+    component.searchRequest.name = 'deepak';
     component.searchProfiles();
     fixture.detectChanges();
     let result = debugElement.query(By.css('#resultTable'));
@@ -129,8 +127,8 @@ describe('AdminComponent', () => {
   }));
 
   it('search by Associate Id', () => {
-    component.searchCriterion = 'SKILL';
-    component.search.skill = 'DOCKER';
+    component.searchRequest.criterion = 'SKILL';
+    component.searchRequest.skill = 'DOCKER';
     component.searchProfiles();
     fixture.detectChanges();
     let result = debugElement.query(By.css('#resultTable'));
@@ -139,8 +137,8 @@ describe('AdminComponent', () => {
   });
 
   it('search by Skill', () => {
-    component.searchCriterion = 'ASSOCIATEID';
-    component.search.associateId = 'CTS12346';
+    component.searchRequest.criterion = 'ASSOCIATEID';
+    component.searchRequest.associateId = 'CTS12346';
     component.searchProfiles();
     fixture.detectChanges();
     let result = debugElement.query(By.css('#resultTable'));
